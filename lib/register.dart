@@ -144,7 +144,7 @@ class _RegisterState extends State<Register> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Do you have account? '),
+                        Text('Do You have an Account? '),
                         GestureDetector(
                           onTap: () {
                             Navigator.pop(context); // kembali ke login
