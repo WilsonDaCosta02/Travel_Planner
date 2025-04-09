@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -9,6 +11,39 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   bool _obscureText = true;
+
+  // Tambahkan controller
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  Future<void> registerUser() async {
+    final url = Uri.parse(
+      'http://localhost:3000/users/register',
+    ); // Ganti dengan IP kalau test di HP
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'name': nameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+
+    final data = json.decode(response.body);
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Register Berhasil!")));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(data['error'] ?? 'Register gagal')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,34 +84,30 @@ class _RegisterState extends State<Register> {
                       ),
                       child: Image.asset('assets/images/Frame 1.png'),
                     ),
-
                     SizedBox(height: 40),
 
-                    // === Nama Lengkap ===
-                    buildInputField(Icons.person, 'Nama :', 'Nama lengkap'),
-
+                    buildInputField(
+                      Icons.person,
+                      'Nama :',
+                      'Nama lengkap',
+                      nameController,
+                    ),
                     SizedBox(height: 10),
-
-                    // === Nomor HP ===
                     buildInputField(
                       Icons.phone,
                       'HP :',
                       '08xxxxxxxxxx',
-                      keyboardType: TextInputType.phone,
+                      phoneController,
                     ),
-
                     SizedBox(height: 10),
-
-                    // === Email ===
                     buildInputField(
                       Icons.email,
                       'Email :',
                       'example@gmail.com',
+                      emailController,
                     ),
-
                     SizedBox(height: 10),
 
-                    // === Password ===
                     Container(
                       width: double.infinity,
                       height: 35,
@@ -92,6 +123,7 @@ class _RegisterState extends State<Register> {
                           Text('Password :'),
                           Expanded(
                             child: TextField(
+                              controller: passwordController,
                               obscureText: _obscureText,
                               style: TextStyle(
                                 color: Colors.black,
@@ -124,8 +156,6 @@ class _RegisterState extends State<Register> {
                     ),
 
                     SizedBox(height: 20),
-
-                    // === Tombol Register ===
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 99, 88, 220),
@@ -134,7 +164,7 @@ class _RegisterState extends State<Register> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: registerUser,
                       child: Text(
                         'Register',
                         style: TextStyle(color: Colors.white),
@@ -147,7 +177,7 @@ class _RegisterState extends State<Register> {
                         Text('Do You have an Account? '),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context); // kembali ke login
+                            Navigator.pop(context);
                           },
                           child: Text(
                             'Back to Login',
@@ -171,9 +201,9 @@ class _RegisterState extends State<Register> {
   Widget buildInputField(
     IconData icon,
     String label,
-    String hintText, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+    String hintText,
+    TextEditingController controller,
+  ) {
     return Container(
       width: double.infinity,
       height: 35,
@@ -189,7 +219,7 @@ class _RegisterState extends State<Register> {
           Text(label),
           Expanded(
             child: TextField(
-              keyboardType: keyboardType,
+              controller: controller,
               style: TextStyle(color: Colors.black, fontSize: 16),
               decoration: InputDecoration(
                 hintText: hintText,
