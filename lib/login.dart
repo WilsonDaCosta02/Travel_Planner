@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'register.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,6 +13,36 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   bool _obscureText = true;
   bool _rememberMe = false;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  Future<void> loginUser() async {
+    final url = Uri.parse(
+      'http://localhost:3000/users/login',
+    ); // ganti IP jika test di HP
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+
+    final data = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Login Berhasil!")));
+      Navigator.pushReplacementNamed(context, '/destinations');
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(data['error'] ?? 'Login gagal')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +59,6 @@ class _LoginState extends State<Login> {
             children: [
               Image.asset('assets/images/Logo.png'),
               SizedBox(height: 15),
-
               SizedBox(
                 width: 235,
                 child: Text(
@@ -36,7 +67,6 @@ class _LoginState extends State<Login> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-
               Image.asset('assets/images/image 1.png'),
               SizedBox(height: 20),
               ElevatedButton(
@@ -84,8 +114,8 @@ class _LoginState extends State<Login> {
                                         'assets/images/Frame 1.png',
                                       ),
                                     ),
-
                                     SizedBox(height: 40),
+
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         minimumSize: Size(300, 33),
@@ -162,12 +192,11 @@ class _LoginState extends State<Login> {
                                         children: [
                                           SizedBox(width: 15),
                                           Icon(Icons.email),
-
                                           SizedBox(width: 15),
                                           Text('Email :'),
-
                                           Expanded(
                                             child: TextField(
+                                              controller: emailController,
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 16,
@@ -188,6 +217,7 @@ class _LoginState extends State<Login> {
                                     ),
 
                                     SizedBox(height: 10),
+
                                     Container(
                                       width: double.infinity,
                                       height: 35,
@@ -204,12 +234,11 @@ class _LoginState extends State<Login> {
                                         children: [
                                           SizedBox(width: 15),
                                           Icon(Icons.key),
-
                                           SizedBox(width: 15),
                                           Text('Password :'),
-
                                           Expanded(
                                             child: TextField(
+                                              controller: passwordController,
                                               obscureText: _obscureText,
                                               style: TextStyle(
                                                 color: Colors.black,
@@ -223,7 +252,6 @@ class _LoginState extends State<Login> {
                                                       horizontal: 8,
                                                       vertical: 9,
                                                     ),
-
                                                 suffixIcon: IconButton(
                                                   onPressed: () {
                                                     setStateDialog(() {
@@ -252,7 +280,7 @@ class _LoginState extends State<Login> {
                                           child: Text(
                                             'Forgot Password?',
                                             style: TextStyle(
-                                              color: const Color.fromARGB(
+                                              color: Color.fromARGB(
                                                 255,
                                                 114,
                                                 33,
@@ -278,9 +306,7 @@ class _LoginState extends State<Login> {
                                       child: CheckboxListTile(
                                         title: Text(
                                           'Remember Me',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                          ), // kecilin font kalau perlu
+                                          style: TextStyle(fontSize: 14),
                                         ),
                                         value: _rememberMe,
                                         onChanged: (value) {
@@ -291,8 +317,7 @@ class _LoginState extends State<Login> {
                                         controlAffinity:
                                             ListTileControlAffinity.leading,
                                         contentPadding: EdgeInsets.zero,
-                                        dense:
-                                            true, // ini juga bantu biar lebih padat
+                                        dense: true,
                                         visualDensity: VisualDensity(
                                           horizontal: -4.0,
                                           vertical: -4.0,
@@ -302,7 +327,7 @@ class _LoginState extends State<Login> {
 
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
+                                        backgroundColor: Color.fromARGB(
                                           255,
                                           99,
                                           88,
@@ -315,7 +340,7 @@ class _LoginState extends State<Login> {
                                           ),
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: loginUser,
                                       child: Text(
                                         'Login',
                                         style: TextStyle(color: Colors.white),
@@ -341,7 +366,7 @@ class _LoginState extends State<Login> {
                                           child: Text(
                                             'Register Account',
                                             style: TextStyle(
-                                              color: const Color.fromARGB(
+                                              color: Color.fromARGB(
                                                 255,
                                                 114,
                                                 33,
