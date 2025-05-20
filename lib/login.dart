@@ -19,7 +19,7 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser() async {
     final url = Uri.parse(
-      'http://localhost:3000/users/login',
+      'http://40.40.9.49:3000/users/login',
     ); // ganti IP jika test di HP
     final response = await http.post(
       url,
@@ -333,7 +333,7 @@ class _LoginState extends State<Login> {
                                           88,
                                           220,
                                         ),
-                                        minimumSize: Size(300, 35),
+                                        minimumSize: Size(290, 35),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             10,
@@ -351,16 +351,15 @@ class _LoginState extends State<Login> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Text(' Don`t have an account? '),
+                                        Text(
+                                          ' Don`t have an account? ',
+                                          style: TextStyle(fontSize: 13),
+                                        ),
                                         GestureDetector(
                                           onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (context) =>
-                                                        const Register(),
-                                              ),
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => Register(),
                                             );
                                           },
                                           child: Text(
@@ -372,6 +371,7 @@ class _LoginState extends State<Login> {
                                                 33,
                                                 243,
                                               ),
+                                              fontSize: 13,
                                             ),
                                           ),
                                         ),
